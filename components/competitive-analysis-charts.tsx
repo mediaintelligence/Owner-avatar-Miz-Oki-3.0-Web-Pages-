@@ -1,87 +1,145 @@
 "use client"
 
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Check, Star, TrendingUp, DollarSign } from "lucide-react"
+import { Progress } from "@/components/ui/progress"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Check, X, Star, TrendingUp, Users, Zap, Shield, Globe, BarChart3 } from "lucide-react"
 
-interface CompetitorData {
-  name: string
-  logo: string
-  pricing: string
-  realTimeMonitoring: { value: string; score: number }
-  aiAccuracy: { value: string; score: number }
-  sourceCoverage: { value: string; score: number }
-  languages: { value: string; score: number }
-  apiLimits: { value: string; score: number }
-  overallScore: number
-}
-
-const competitors: CompetitorData[] = [
+const competitors = [
   {
     name: "MediaIntelligence.ai",
-    logo: "🧠",
-    pricing: "$299/mo",
-    realTimeMonitoring: { value: "<1 second", score: 100 },
-    aiAccuracy: { value: "95% accuracy", score: 100 },
-    sourceCoverage: { value: "30M+ sources", score: 100 },
-    languages: { value: "120", score: 100 },
-    apiLimits: { value: "10K/hour", score: 100 },
-    overallScore: 100,
+    logo: "MI",
+    color: "#00D4FF",
+    pricing: "$299",
+    sources: "30M+",
+    accuracy: 95,
+    languages: 120,
+    apiLimit: "10K/hour",
+    realTime: "<1 second",
+    position: { x: 85, y: 20 },
   },
   {
     name: "Brand24",
-    logo: "📊",
-    pricing: "$119/mo",
-    realTimeMonitoring: { value: "2-5 seconds", score: 60 },
-    aiAccuracy: { value: "85% accuracy", score: 75 },
-    sourceCoverage: { value: "25M sources", score: 80 },
-    languages: { value: "108", score: 85 },
-    apiLimits: { value: "5K/hour", score: 50 },
-    overallScore: 70,
+    logo: "B24",
+    color: "#FF6B6B",
+    pricing: "$119",
+    sources: "25M",
+    accuracy: 85,
+    languages: 108,
+    apiLimit: "5K/hour",
+    realTime: "2-5 seconds",
+    position: { x: 60, y: 60 },
   },
   {
     name: "Agility PR",
-    logo: "📈",
-    pricing: "$450/mo",
-    realTimeMonitoring: { value: "5-10 seconds", score: 40 },
-    aiAccuracy: { value: "90% accuracy", score: 85 },
-    sourceCoverage: { value: "20M sources", score: 65 },
-    languages: { value: "75", score: 60 },
-    apiLimits: { value: "3K/hour", score: 30 },
-    overallScore: 56,
+    logo: "APR",
+    color: "#4ECDC4",
+    pricing: "$450",
+    sources: "20M",
+    accuracy: 90,
+    languages: 75,
+    apiLimit: "3K/hour",
+    realTime: "5-10 seconds",
+    position: { x: 40, y: 30 },
   },
   {
     name: "Signal AI",
-    logo: "🤖",
-    pricing: "Enterprise only",
-    realTimeMonitoring: { value: "2-5 seconds", score: 60 },
-    aiAccuracy: { value: "92% accuracy", score: 90 },
-    sourceCoverage: { value: "15M sources", score: 50 },
-    languages: { value: "50", score: 40 },
-    apiLimits: { value: "Custom", score: 80 },
-    overallScore: 64,
+    logo: "SAI",
+    color: "#45B7D1",
+    pricing: "Enterprise",
+    sources: "15M",
+    accuracy: 92,
+    languages: 50,
+    apiLimit: "Custom",
+    realTime: "2-5 seconds",
+    position: { x: 70, y: 80 },
   },
 ]
 
-const features = [
-  { key: "realTimeMonitoring", label: "Real-time Monitoring", icon: TrendingUp },
-  { key: "aiAccuracy", label: "AI Sentiment Analysis", icon: Star },
-  { key: "sourceCoverage", label: "Source Coverage", icon: TrendingUp },
-  { key: "languages", label: "Languages Supported", icon: Star },
-  { key: "apiLimits", label: "API Rate Limits", icon: TrendingUp },
+const featureComparison = [
+  {
+    feature: "Real-time Monitoring",
+    mediaIntelligence: { status: "best", value: "<1 second" },
+    brand24: { status: "good", value: "2-5 seconds" },
+    agilityPR: { status: "average", value: "5-10 seconds" },
+    signalAI: { status: "good", value: "2-5 seconds" },
+  },
+  {
+    feature: "AI Sentiment Analysis",
+    mediaIntelligence: { status: "best", value: "95% accuracy" },
+    brand24: { status: "good", value: "85% accuracy" },
+    agilityPR: { status: "good", value: "90% accuracy" },
+    signalAI: { status: "good", value: "92% accuracy" },
+  },
+  {
+    feature: "Source Coverage",
+    mediaIntelligence: { status: "best", value: "30M+ sources" },
+    brand24: { status: "good", value: "25M sources" },
+    agilityPR: { status: "average", value: "20M sources" },
+    signalAI: { status: "average", value: "15M sources" },
+  },
+  {
+    feature: "Languages Supported",
+    mediaIntelligence: { status: "best", value: "120" },
+    brand24: { status: "good", value: "108" },
+    agilityPR: { status: "average", value: "75" },
+    signalAI: { status: "poor", value: "50" },
+  },
+  {
+    feature: "API Rate Limits",
+    mediaIntelligence: { status: "best", value: "10K/hour" },
+    brand24: { status: "good", value: "5K/hour" },
+    agilityPR: { status: "average", value: "3K/hour" },
+    signalAI: { status: "good", value: "Custom" },
+  },
+  {
+    feature: "Starting Price",
+    mediaIntelligence: { status: "good", value: "$299/mo" },
+    brand24: { status: "best", value: "$119/mo" },
+    agilityPR: { status: "poor", value: "$450/mo" },
+    signalAI: { status: "poor", value: "Enterprise only" },
+  },
+]
+
+const marketMetrics = [
+  { name: "Market Share", value: 15, change: "+3.2%", color: "#00D4FF" },
+  { name: "Customer Growth", value: 45, change: "+12%", color: "#10B981" },
+  { name: "Feature Completeness", value: 92, change: "+8%", color: "#A47864" },
+  { name: "Customer Satisfaction", value: 4.8, change: "+0.3", color: "#F59E0B" },
 ]
 
 export function CompetitiveAnalysisCharts() {
-  const getScoreColor = (score: number) => {
-    if (score >= 90) return "text-green-400"
-    if (score >= 70) return "text-yellow-400"
-    return "text-red-400"
+  const [selectedView, setSelectedView] = useState("features")
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "best":
+        return "text-green-400 bg-green-400/20"
+      case "good":
+        return "text-blue-400 bg-blue-400/20"
+      case "average":
+        return "text-yellow-400 bg-yellow-400/20"
+      case "poor":
+        return "text-red-400 bg-red-400/20"
+      default:
+        return "text-gray-400 bg-gray-400/20"
+    }
   }
 
-  const getScoreBg = (score: number) => {
-    if (score >= 90) return "bg-green-500/20 border-green-500/30"
-    if (score >= 70) return "bg-yellow-500/20 border-yellow-500/30"
-    return "bg-red-500/20 border-red-500/30"
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "best":
+        return <Check className="h-4 w-4" />
+      case "good":
+        return <Check className="h-4 w-4" />
+      case "average":
+        return <Star className="h-4 w-4" />
+      case "poor":
+        return <X className="h-4 w-4" />
+      default:
+        return <X className="h-4 w-4" />
+    }
   }
 
   return (
@@ -91,194 +149,199 @@ export function CompetitiveAnalysisCharts() {
           <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">
             Competitive{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00D4FF] to-[#A47864]">
-              Analysis Matrix
+              Intelligence
             </span>
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Comprehensive feature comparison showing MediaIntelligence.ai's competitive advantages
+            How MediaIntelligence.ai leads the market in key performance metrics
           </p>
         </div>
 
-        {/* Feature Comparison Table */}
-        <div className="mb-12">
-          <Card className="bg-white/5 backdrop-blur-md border-white/10 overflow-hidden">
-            <CardHeader>
-              <CardTitle className="text-white">Feature Comparison Matrix</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-white/10">
-                      <th className="text-left p-4 text-white font-semibold">Feature</th>
-                      {competitors.map((competitor) => (
-                        <th key={competitor.name} className="text-center p-4 text-white font-semibold min-w-[150px]">
-                          <div className="flex flex-col items-center space-y-2">
-                            <div className="text-2xl">{competitor.logo}</div>
-                            <div className="text-sm">{competitor.name}</div>
-                            <Badge className="bg-white/10 text-white text-xs">{competitor.pricing}</Badge>
-                          </div>
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {features.map((feature) => {
-                      const Icon = feature.icon
-                      return (
-                        <tr key={feature.key} className="border-b border-white/10 hover:bg-white/5">
-                          <td className="p-4">
-                            <div className="flex items-center space-x-3">
-                              <Icon className="h-4 w-4 text-[#00D4FF]" />
-                              <span className="text-white font-medium">{feature.label}</span>
+        <Tabs value={selectedView} onValueChange={setSelectedView} className="w-full">
+          <TabsList className="grid w-full grid-cols-3 mb-8 bg-white/10 backdrop-blur-md">
+            <TabsTrigger value="features" className="data-[state=active]:bg-white/20 text-white">
+              <BarChart3 className="h-4 w-4 mr-2" />
+              Feature Matrix
+            </TabsTrigger>
+            <TabsTrigger value="positioning" className="data-[state=active]:bg-white/20 text-white">
+              <TrendingUp className="h-4 w-4 mr-2" />
+              Market Position
+            </TabsTrigger>
+            <TabsTrigger value="metrics" className="data-[state=active]:bg-white/20 text-white">
+              <Users className="h-4 w-4 mr-2" />
+              Performance
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="features">
+            <Card className="bg-white/5 backdrop-blur-md border-white/10">
+              <CardHeader>
+                <CardTitle className="text-white">Feature Comparison Matrix</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-white/10">
+                        <th className="text-left text-white font-semibold py-3 px-4">Feature</th>
+                        <th className="text-center text-[#00D4FF] font-semibold py-3 px-4">MediaIntelligence.ai</th>
+                        <th className="text-center text-gray-300 font-semibold py-3 px-4">Brand24</th>
+                        <th className="text-center text-gray-300 font-semibold py-3 px-4">Agility PR</th>
+                        <th className="text-center text-gray-300 font-semibold py-3 px-4">Signal AI</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {featureComparison.map((row, index) => (
+                        <tr key={index} className="border-b border-white/5">
+                          <td className="text-white py-4 px-4 font-medium">{row.feature}</td>
+                          <td className="py-4 px-4">
+                            <div
+                              className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${getStatusColor(row.mediaIntelligence.status)}`}
+                            >
+                              {getStatusIcon(row.mediaIntelligence.status)}
+                              <span className="ml-2">{row.mediaIntelligence.value}</span>
                             </div>
                           </td>
-                          {competitors.map((competitor) => {
-                            const data = competitor[feature.key as keyof CompetitorData] as {
-                              value: string
-                              score: number
-                            }
-                            return (
-                              <td key={`${competitor.name}-${feature.key}`} className="p-4 text-center">
-                                <div className="space-y-2">
-                                  <div className="text-white text-sm font-medium">{data.value}</div>
-                                  <div className={`text-xs ${getScoreColor(data.score)}`}>Score: {data.score}/100</div>
-                                </div>
-                              </td>
-                            )
-                          })}
+                          <td className="py-4 px-4">
+                            <div
+                              className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${getStatusColor(row.brand24.status)}`}
+                            >
+                              {getStatusIcon(row.brand24.status)}
+                              <span className="ml-2">{row.brand24.value}</span>
+                            </div>
+                          </td>
+                          <td className="py-4 px-4">
+                            <div
+                              className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${getStatusColor(row.agilityPR.status)}`}
+                            >
+                              {getStatusIcon(row.agilityPR.status)}
+                              <span className="ml-2">{row.agilityPR.value}</span>
+                            </div>
+                          </td>
+                          <td className="py-4 px-4">
+                            <div
+                              className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${getStatusColor(row.signalAI.status)}`}
+                            >
+                              {getStatusIcon(row.signalAI.status)}
+                              <span className="ml-2">{row.signalAI.value}</span>
+                            </div>
+                          </td>
                         </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-        {/* Competitive Positioning Radar */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-          <Card className="bg-white/5 backdrop-blur-md border-white/10">
-            <CardHeader>
-              <CardTitle className="text-white">Market Positioning</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {competitors.map((competitor, index) => (
-                  <div key={competitor.name} className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="text-xl">{competitor.logo}</div>
-                        <div>
-                          <div className="text-white font-medium">{competitor.name}</div>
-                          <div className="text-gray-400 text-sm">{competitor.pricing}</div>
-                        </div>
-                      </div>
-                      <Badge className={getScoreBg(competitor.overallScore)}>{competitor.overallScore}/100</Badge>
-                    </div>
-                    <div className="w-full bg-gray-700 rounded-full h-3">
+          <TabsContent value="positioning">
+            <Card className="bg-white/5 backdrop-blur-md border-white/10">
+              <CardHeader>
+                <CardTitle className="text-white">Market Positioning Map</CardTitle>
+                <p className="text-gray-300">Price vs Feature Completeness</p>
+              </CardHeader>
+              <CardContent>
+                <div className="relative h-96 bg-gradient-to-br from-white/5 to-white/10 rounded-lg p-8">
+                  {/* Axes */}
+                  <div className="absolute bottom-8 left-8 right-8 h-0.5 bg-white/20"></div>
+                  <div className="absolute bottom-8 left-8 top-8 w-0.5 bg-white/20"></div>
+
+                  {/* Labels */}
+                  <div className="absolute bottom-2 right-2 text-gray-400 text-sm">Feature Completeness →</div>
+                  <div className="absolute top-2 left-2 text-gray-400 text-sm transform -rotate-90 origin-left">
+                    Price →
+                  </div>
+
+                  {/* Quadrant Labels */}
+                  <div className="absolute top-4 right-4 text-gray-500 text-xs">Premium Leaders</div>
+                  <div className="absolute bottom-4 right-4 text-gray-500 text-xs">Value Leaders</div>
+                  <div className="absolute top-4 left-16 text-gray-500 text-xs">Niche Players</div>
+                  <div className="absolute bottom-4 left-16 text-gray-500 text-xs">Budget Options</div>
+
+                  {/* Competitors */}
+                  {competitors.map((competitor, index) => (
+                    <div
+                      key={index}
+                      className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer hover:scale-110 transition-transform"
+                      style={{
+                        left: `${competitor.position.x}%`,
+                        top: `${competitor.position.y}%`,
+                      }}
+                    >
                       <div
-                        className={`h-3 rounded-full transition-all duration-1000 ${
-                          competitor.name === "MediaIntelligence.ai"
-                            ? "bg-gradient-to-r from-[#00D4FF] to-[#A47864]"
-                            : competitor.overallScore >= 70
-                              ? "bg-yellow-500"
-                              : "bg-red-500"
-                        }`}
-                        style={{ width: `${competitor.overallScore}%` }}
-                      ></div>
+                        className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-sm border-2"
+                        style={{
+                          backgroundColor: competitor.color,
+                          borderColor: competitor.name === "MediaIntelligence.ai" ? "#fff" : competitor.color,
+                        }}
+                      >
+                        {competitor.logo}
+                      </div>
+                      <div className="text-center mt-2">
+                        <div className="text-white text-xs font-medium">{competitor.name}</div>
+                        <div className="text-gray-400 text-xs">{competitor.pricing}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="metrics">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {marketMetrics.map((metric, index) => (
+                <Card key={index} className="bg-white/5 backdrop-blur-md border-white/10">
+                  <CardContent className="p-6 text-center">
+                    <div className="text-3xl font-bold text-white mb-2">
+                      {metric.name === "Customer Satisfaction" ? metric.value : `${metric.value}%`}
+                    </div>
+                    <div className="text-gray-300 text-sm mb-3">{metric.name}</div>
+                    <div className="text-sm font-semibold" style={{ color: metric.color }}>
+                      {metric.change} vs last quarter
+                    </div>
+                    <Progress
+                      value={metric.name === "Customer Satisfaction" ? metric.value * 20 : metric.value}
+                      className="mt-3 h-2"
+                    />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            <Card className="mt-8 bg-white/5 backdrop-blur-md border-white/10">
+              <CardHeader>
+                <CardTitle className="text-white">Competitive Advantages</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="flex items-start space-x-3">
+                    <Zap className="h-6 w-6 text-[#00D4FF] mt-1" />
+                    <div>
+                      <h4 className="text-white font-semibold mb-2">Fastest Processing</h4>
+                      <p className="text-gray-300 text-sm">Sub-second real-time monitoring beats all competitors</p>
                     </div>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/5 backdrop-blur-md border-white/10">
-            <CardHeader>
-              <CardTitle className="text-white">Value Proposition Analysis</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-4 bg-green-500/20 rounded-lg border border-green-500/30">
-                    <div className="text-2xl font-bold text-green-400">95%</div>
-                    <div className="text-sm text-gray-300">AI Accuracy</div>
-                    <div className="text-xs text-green-400">Industry Leading</div>
+                  <div className="flex items-start space-x-3">
+                    <Shield className="h-6 w-6 text-[#A47864] mt-1" />
+                    <div>
+                      <h4 className="text-white font-semibold mb-2">Highest Accuracy</h4>
+                      <p className="text-gray-300 text-sm">95% AI sentiment accuracy with context understanding</p>
+                    </div>
                   </div>
-                  <div className="text-center p-4 bg-[#00D4FF]/20 rounded-lg border border-[#00D4FF]/30">
-                    <div className="text-2xl font-bold text-[#00D4FF]">&lt;1s</div>
-                    <div className="text-sm text-gray-300">Response Time</div>
-                    <div className="text-xs text-[#00D4FF]">Fastest Available</div>
-                  </div>
-                  <div className="text-center p-4 bg-[#A47864]/20 rounded-lg border border-[#A47864]/30">
-                    <div className="text-2xl font-bold text-[#A47864]">30M+</div>
-                    <div className="text-sm text-gray-300">Sources</div>
-                    <div className="text-xs text-[#A47864]">Largest Coverage</div>
-                  </div>
-                  <div className="text-center p-4 bg-purple-500/20 rounded-lg border border-purple-500/30">
-                    <div className="text-2xl font-bold text-purple-400">120</div>
-                    <div className="text-sm text-gray-300">Languages</div>
-                    <div className="text-xs text-purple-400">Global Reach</div>
+                  <div className="flex items-start space-x-3">
+                    <Globe className="h-6 w-6 text-[#10B981] mt-1" />
+                    <div>
+                      <h4 className="text-white font-semibold mb-2">Widest Coverage</h4>
+                      <p className="text-gray-300 text-sm">30M+ sources across 120 languages globally</p>
+                    </div>
                   </div>
                 </div>
-
-                <div className="pt-4 border-t border-white/10">
-                  <h4 className="text-white font-semibold mb-3">Competitive Advantages</h4>
-                  <div className="space-y-2">
-                    {[
-                      "Sub-second real-time processing",
-                      "Highest AI accuracy in market",
-                      "Largest source coverage globally",
-                      "Most comprehensive language support",
-                      "Superior API rate limits",
-                    ].map((advantage, index) => (
-                      <div key={index} className="flex items-center space-x-2">
-                        <Check className="h-4 w-4 text-green-400" />
-                        <span className="text-gray-300 text-sm">{advantage}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* ROI Comparison */}
-        <Card className="bg-gradient-to-r from-[#00D4FF]/10 to-[#A47864]/10 border-white/10">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center">
-              <DollarSign className="h-5 w-5 mr-2" />
-              ROI & Value Analysis
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-[#00D4FF] mb-2">40%</div>
-                <div className="text-white font-medium">Higher Accuracy</div>
-                <div className="text-gray-300 text-sm">vs. closest competitor</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-[#A47864] mb-2">5x</div>
-                <div className="text-white font-medium">Faster Processing</div>
-                <div className="text-gray-300 text-sm">Real-time advantage</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-green-400 mb-2">25%</div>
-                <div className="text-white font-medium">More Sources</div>
-                <div className="text-gray-300 text-sm">Comprehensive coverage</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-purple-400 mb-2">2x</div>
-                <div className="text-white font-medium">API Capacity</div>
-                <div className="text-gray-300 text-sm">Higher rate limits</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </section>
   )

@@ -3,271 +3,239 @@
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowRight, Users, Search, MousePointer, Eye, CreditCard } from "lucide-react"
+import { Progress } from "@/components/ui/progress"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Users, Search, TrendingUp, CheckCircle, Clock, BarChart3, Zap } from "lucide-react"
 
-interface FlowStep {
-  id: string
-  title: string
-  description: string
-  percentage?: number
-  icon: any
-  color: string
-}
-
-interface UserFlow {
-  id: string
-  name: string
-  description: string
-  percentage: number
-  color: string
-  steps: FlowStep[]
-}
-
-const userFlows: UserFlow[] = [
+const conversionPaths = [
   {
-    id: "immediate-trial",
-    name: "Immediate Trial Path",
-    description: "High-intent visitors who convert immediately",
+    id: "immediate",
+    name: "Immediate Trial",
     percentage: 20,
-    color: "bg-green-500",
+    color: "#00D4FF",
+    icon: Zap,
     steps: [
-      {
-        id: "landing",
-        title: "Homepage Landing",
-        description: "Visitor arrives from high-intent search",
-        percentage: 100,
-        icon: MousePointer,
-        color: "bg-green-500/20 text-green-400 border-green-500/30",
-      },
-      {
-        id: "cta-click",
-        title: "CTA Click",
-        description: "Clicks 'Start Free Trial' button",
-        percentage: 85,
-        icon: CreditCard,
-        color: "bg-green-500/20 text-green-400 border-green-500/30",
-      },
-      {
-        id: "signup",
-        title: "Quick Signup",
-        description: "Email capture (no password required)",
-        percentage: 75,
-        icon: Users,
-        color: "bg-green-500/20 text-green-400 border-green-500/30",
-      },
-      {
-        id: "onboarding",
-        title: "Guided Onboarding",
-        description: "3-step setup wizard completion",
-        percentage: 60,
-        icon: Eye,
-        color: "bg-green-500/20 text-green-400 border-green-500/30",
-      },
+      { name: "Landing Page", conversion: 100, visitors: 1000 },
+      { name: "Value Proposition", conversion: 85, visitors: 850 },
+      { name: "Trial Signup", conversion: 25, visitors: 213 },
+      { name: "Onboarding", conversion: 80, visitors: 170 },
+      { name: "First Value", conversion: 60, visitors: 102 },
+      { name: "Paid Conversion", conversion: 15, visitors: 15 },
     ],
   },
   {
-    id: "research-path",
+    id: "research",
     name: "Research Path",
-    description: "Visitors who need to evaluate features and pricing",
     percentage: 50,
-    color: "bg-[#00D4FF]",
+    color: "#A47864",
+    icon: Search,
     steps: [
-      {
-        id: "homepage",
-        title: "Homepage",
-        description: "Initial landing and overview",
-        percentage: 100,
-        icon: MousePointer,
-        color: "bg-[#00D4FF]/20 text-[#00D4FF] border-[#00D4FF]/30",
-      },
-      {
-        id: "features",
-        title: "Features Page",
-        description: "Detailed feature exploration",
-        percentage: 70,
-        icon: Search,
-        color: "bg-[#00D4FF]/20 text-[#00D4FF] border-[#00D4FF]/30",
-      },
-      {
-        id: "pricing",
-        title: "Pricing Page",
-        description: "Plan comparison and evaluation",
-        percentage: 45,
-        icon: CreditCard,
-        color: "bg-[#00D4FF]/20 text-[#00D4FF] border-[#00D4FF]/30",
-      },
-      {
-        id: "demo",
-        title: "Demo Request",
-        description: "Books personalized demonstration",
-        percentage: 25,
-        icon: Eye,
-        color: "bg-[#00D4FF]/20 text-[#00D4FF] border-[#00D4FF]/30",
-      },
+      { name: "Landing Page", conversion: 100, visitors: 1000 },
+      { name: "Features Page", conversion: 70, visitors: 700 },
+      { name: "Pricing Page", conversion: 60, visitors: 420 },
+      { name: "Case Studies", conversion: 45, visitors: 189 },
+      { name: "Demo Request", conversion: 35, visitors: 66 },
+      { name: "Trial Signup", conversion: 80, visitors: 53 },
     ],
   },
   {
-    id: "comparison-path",
+    id: "comparison",
     name: "Comparison Path",
-    description: "Visitors comparing with competitors",
     percentage: 30,
-    color: "bg-[#A47864]",
+    color: "#10B981",
+    icon: BarChart3,
     steps: [
-      {
-        id: "homepage",
-        title: "Homepage",
-        description: "Initial brand impression",
-        percentage: 100,
-        icon: MousePointer,
-        color: "bg-[#A47864]/20 text-[#A47864] border-[#A47864]/30",
-      },
-      {
-        id: "competitors",
-        title: "Competitors Page",
-        description: "Feature and pricing comparison",
-        percentage: 60,
-        icon: Search,
-        color: "bg-[#A47864]/20 text-[#A47864] border-[#A47864]/30",
-      },
-      {
-        id: "pricing",
-        title: "Pricing Analysis",
-        description: "ROI and value assessment",
-        percentage: 40,
-        icon: CreditCard,
-        color: "bg-[#A47864]/20 text-[#A47864] border-[#A47864]/30",
-      },
-      {
-        id: "trial",
-        title: "Trial Signup",
-        description: "Converts to trial after comparison",
-        percentage: 20,
-        icon: Users,
-        color: "bg-[#A47864]/20 text-[#A47864] border-[#A47864]/30",
-      },
+      { name: "Landing Page", conversion: 100, visitors: 1000 },
+      { name: "Competitors Page", conversion: 55, visitors: 550 },
+      { name: "Pricing Comparison", conversion: 40, visitors: 220 },
+      { name: "Feature Matrix", conversion: 30, visitors: 66 },
+      { name: "Demo Booking", conversion: 45, visitors: 30 },
+      { name: "Trial Conversion", conversion: 70, visitors: 21 },
     ],
   },
 ]
 
+const leadMagnets = [
+  {
+    stage: "Top of Funnel",
+    title: "2025 State of Media Intelligence Report",
+    description: "Industry benchmarks and trends",
+    conversionRate: "12%",
+    leads: "2,400/month",
+  },
+  {
+    stage: "Middle Funnel",
+    title: "PR Crisis Prevention Playbook",
+    description: "Step-by-step crisis management guide",
+    conversionRate: "18%",
+    leads: "1,800/month",
+  },
+  {
+    stage: "Bottom Funnel",
+    title: "Custom AI Training Session",
+    description: "Industry-specific AI configuration",
+    conversionRate: "35%",
+    leads: "420/month",
+  },
+]
+
 export function UserFlowDiagrams() {
-  const [selectedFlow, setSelectedFlow] = useState<UserFlow>(userFlows[0])
+  const [selectedPath, setSelectedPath] = useState("immediate")
+  const [activeStep, setActiveStep] = useState(0)
+
+  const currentPath = conversionPaths.find((path) => path.id === selectedPath)
 
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8">
+    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#1B365D] to-[#2A4A6B]">
       <div className="container mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">
             User Journey{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00D4FF] to-[#A47864]">
-              Flow Analysis
+              Analytics
             </span>
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Multi-path conversion flows showing how different visitor types navigate through our platform
+            Understanding how visitors convert through our optimized funnel paths
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Flow Selection */}
-          <div className="space-y-4">
-            <h3 className="text-white font-semibold mb-4">Visitor Paths</h3>
-            {userFlows.map((flow) => (
-              <Card
-                key={flow.id}
-                className={`cursor-pointer transition-all duration-300 ${
-                  selectedFlow.id === flow.id
-                    ? "bg-white/10 border-[#00D4FF] ring-2 ring-[#00D4FF]/50"
-                    : "bg-white/5 border-white/10 hover:bg-white/10"
-                }`}
-                onClick={() => setSelectedFlow(flow)}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="text-white font-medium text-sm">{flow.name}</h4>
-                    <Badge className="bg-white/10 text-white">{flow.percentage}%</Badge>
+        <Tabs value={selectedPath} onValueChange={setSelectedPath} className="w-full">
+          <TabsList className="grid w-full grid-cols-3 mb-8 bg-white/10 backdrop-blur-md">
+            {conversionPaths.map((path) => {
+              const IconComponent = path.icon
+              return (
+                <TabsTrigger key={path.id} value={path.id} className="data-[state=active]:bg-white/20 text-white">
+                  <IconComponent className="h-4 w-4 mr-2" />
+                  {path.name}
+                  <Badge className="ml-2" style={{ backgroundColor: path.color }}>
+                    {path.percentage}%
+                  </Badge>
+                </TabsTrigger>
+              )
+            })}
+          </TabsList>
+
+          {conversionPaths.map((path) => (
+            <TabsContent key={path.id} value={path.id}>
+              <Card className="bg-white/5 backdrop-blur-md border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center">
+                    <path.icon className="h-6 w-6 mr-3" style={{ color: path.color }} />
+                    {path.name} Journey
+                    <Badge className="ml-3" style={{ backgroundColor: path.color }}>
+                      {path.percentage}% of visitors
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    {path.steps.map((step, index) => (
+                      <div key={index} className="relative">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center space-x-3">
+                            <div
+                              className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold"
+                              style={{ backgroundColor: path.color }}
+                            >
+                              {index + 1}
+                            </div>
+                            <span className="text-white font-medium">{step.name}</span>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-white font-semibold">{step.visitors} visitors</div>
+                            <div className="text-gray-400 text-sm">{step.conversion}% conversion</div>
+                          </div>
+                        </div>
+                        <Progress
+                          value={step.conversion}
+                          className="h-2 mb-4"
+                          style={{
+                            backgroundColor: "rgba(255,255,255,0.1)",
+                          }}
+                        />
+                        {index < path.steps.length - 1 && (
+                          <div className="absolute left-4 top-12 w-0.5 h-6 bg-gray-600"></div>
+                        )}
+                      </div>
+                    ))}
                   </div>
-                  <p className="text-gray-300 text-xs">{flow.description}</p>
-                  <div className="mt-3">
-                    <div className="w-full bg-gray-700 rounded-full h-2">
-                      <div className={`h-2 rounded-full ${flow.color}`} style={{ width: `${flow.percentage}%` }}></div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          ))}
+        </Tabs>
+
+        {/* Lead Magnets Section */}
+        <div className="mt-16">
+          <h3 className="text-3xl font-bold text-white mb-8 text-center">Strategic Lead Magnets by Funnel Stage</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {leadMagnets.map((magnet, index) => (
+              <Card
+                key={index}
+                className="bg-white/5 backdrop-blur-md border-white/10 hover:bg-white/10 transition-all duration-300"
+              >
+                <CardHeader>
+                  <Badge className="w-fit mb-2 bg-[#00D4FF]/20 text-[#00D4FF] border-[#00D4FF]/30">
+                    {magnet.stage}
+                  </Badge>
+                  <CardTitle className="text-white text-lg">{magnet.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-300 mb-4">{magnet.description}</p>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <div className="text-[#00D4FF] font-semibold">{magnet.conversionRate}</div>
+                      <div className="text-gray-400 text-sm">Conversion Rate</div>
+                    </div>
+                    <div>
+                      <div className="text-[#A47864] font-semibold">{magnet.leads}</div>
+                      <div className="text-gray-400 text-sm">Monthly Leads</div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
             ))}
           </div>
+        </div>
 
-          {/* Flow Visualization */}
-          <div className="lg:col-span-3">
-            <Card className="bg-white/5 backdrop-blur-md border-white/10">
-              <CardHeader>
-                <CardTitle className="text-white flex items-center justify-between">
-                  {selectedFlow.name}
-                  <Badge className="bg-white/10 text-white">{selectedFlow.percentage}% of visitors</Badge>
-                </CardTitle>
-                <p className="text-gray-300">{selectedFlow.description}</p>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  {selectedFlow.steps.map((step, index) => {
-                    const Icon = step.icon
-                    const isLast = index === selectedFlow.steps.length - 1
+        {/* Conversion Optimization Insights */}
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card className="bg-green-500/10 border-green-500/20">
+            <CardContent className="p-6 text-center">
+              <CheckCircle className="h-8 w-8 text-green-400 mx-auto mb-3" />
+              <div className="text-2xl font-bold text-green-400">8.5%</div>
+              <div className="text-gray-300 text-sm">Overall Conversion Rate</div>
+              <div className="text-green-400 text-xs mt-1">↑ 2.3% vs industry avg</div>
+            </CardContent>
+          </Card>
 
-                    return (
-                      <div key={step.id} className="relative">
-                        <div className="flex items-center space-x-4">
-                          <div className={`p-3 rounded-lg ${step.color}`}>
-                            <Icon className="h-5 w-5" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between mb-2">
-                              <h4 className="text-white font-semibold">{step.title}</h4>
-                              {step.percentage && (
-                                <div className="flex items-center space-x-2">
-                                  <span className="text-gray-300 text-sm">{step.percentage}%</span>
-                                  <div className="w-20 bg-gray-700 rounded-full h-2">
-                                    <div
-                                      className={`h-2 rounded-full ${selectedFlow.color}`}
-                                      style={{ width: `${step.percentage}%` }}
-                                    ></div>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                            <p className="text-gray-300 text-sm">{step.description}</p>
-                          </div>
-                        </div>
+          <Card className="bg-[#00D4FF]/10 border-[#00D4FF]/20">
+            <CardContent className="p-6 text-center">
+              <Clock className="h-8 w-8 text-[#00D4FF] mx-auto mb-3" />
+              <div className="text-2xl font-bold text-[#00D4FF]">4.2 min</div>
+              <div className="text-gray-300 text-sm">Avg. Time on Site</div>
+              <div className="text-[#00D4FF] text-xs mt-1">Target: 3+ minutes</div>
+            </CardContent>
+          </Card>
 
-                        {!isLast && (
-                          <div className="flex items-center justify-center my-4">
-                            <ArrowRight className="h-5 w-5 text-gray-400" />
-                          </div>
-                        )}
-                      </div>
-                    )
-                  })}
-                </div>
+          <Card className="bg-[#A47864]/10 border-[#A47864]/20">
+            <CardContent className="p-6 text-center">
+              <TrendingUp className="h-8 w-8 text-[#A47864] mx-auto mb-3" />
+              <div className="text-2xl font-bold text-[#A47864]">18%</div>
+              <div className="text-gray-300 text-sm">Trial to Paid Rate</div>
+              <div className="text-[#A47864] text-xs mt-1">Target: 15-20%</div>
+            </CardContent>
+          </Card>
 
-                <div className="mt-8 p-4 bg-gradient-to-r from-[#00D4FF]/10 to-[#A47864]/10 rounded-lg border border-white/10">
-                  <h4 className="text-white font-semibold mb-2">Conversion Insights</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                    <div>
-                      <div className="text-[#00D4FF] font-semibold">Drop-off Points</div>
-                      <div className="text-gray-300">Identified at each step</div>
-                    </div>
-                    <div>
-                      <div className="text-[#A47864] font-semibold">Optimization</div>
-                      <div className="text-gray-300">A/B testing opportunities</div>
-                    </div>
-                    <div>
-                      <div className="text-green-400 font-semibold">Success Rate</div>
-                      <div className="text-gray-300">Above industry average</div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <Card className="bg-purple-500/10 border-purple-500/20">
+            <CardContent className="p-6 text-center">
+              <Users className="h-8 w-8 text-purple-400 mx-auto mb-3" />
+              <div className="text-2xl font-bold text-purple-400">$2,400</div>
+              <div className="text-gray-300 text-sm">Customer Acq. Cost</div>
+              <div className="text-purple-400 text-xs mt-1">↓ 15% this quarter</div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </section>
