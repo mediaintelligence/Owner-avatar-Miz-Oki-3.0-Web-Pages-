@@ -1,183 +1,340 @@
 "use client"
 
 import { useState } from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Check, Star } from "lucide-react"
 import { Switch } from "@/components/ui/switch"
+import { Slider } from "@/components/ui/slider"
+import { Check, Star, Zap, Crown, Building, ArrowRight, Calculator } from "lucide-react"
 
 const pricingTiers = [
   {
     name: "Starter",
-    price: { monthly: 299, annual: 239 },
-    description: "Perfect for small teams getting started with media intelligence",
+    description: "Perfect for growing businesses",
+    monthlyPrice: 299,
+    annualPrice: 2390, // 20% discount
+    icon: Zap,
+    color: "text-teal-400",
+    borderColor: "border-teal-400/30",
+    bgColor: "bg-teal-400/5",
     features: [
-      "10,000 mentions/month",
-      "Basic sentiment analysis",
       "5 team members",
+      "10K sources monitored",
+      "Real-time alerts",
+      "Basic AI insights",
       "Email support",
       "Standard integrations",
-      "Weekly reports",
+      "Mobile app access",
+      "30-day data retention",
     ],
-    cta: "Start Free Trial",
-    popular: false,
+    limitations: ["No custom AI training", "Limited API calls", "Standard support only"],
   },
   {
     name: "Professional",
-    price: { monthly: 999, annual: 799 },
-    description: "Advanced features for growing businesses and marketing teams",
-    features: [
-      "100,000 mentions/month",
-      "AI-powered sentiment analysis",
-      "25 team members",
-      "Priority support",
-      "Advanced integrations",
-      "Real-time alerts",
-      "Custom dashboards",
-      "API access",
-    ],
-    cta: "Start Free Trial",
+    description: "For scaling organizations",
+    monthlyPrice: 999,
+    annualPrice: 7992, // 33% discount
+    icon: Star,
+    color: "text-purple-400",
+    borderColor: "border-purple-400/30",
+    bgColor: "bg-purple-400/5",
     popular: true,
+    features: [
+      "25 team members",
+      "100K sources monitored",
+      "Advanced AI reasoning",
+      "Predictive analytics",
+      "Priority support",
+      "Custom integrations",
+      "White-label options",
+      "1-year data retention",
+      "Advanced reporting",
+      "Crisis prevention AI",
+    ],
+    limitations: ["Limited custom models", "Standard SLA"],
   },
   {
     name: "Enterprise",
-    price: { monthly: "Custom", annual: "Custom" },
-    description: "Comprehensive solution for large organizations",
+    description: "For large organizations",
+    monthlyPrice: null,
+    annualPrice: null,
+    customPricing: true,
+    icon: Crown,
+    color: "text-yellow-400",
+    borderColor: "border-yellow-400/30",
+    bgColor: "bg-yellow-400/5",
     features: [
-      "Unlimited mentions",
-      "Advanced AI analytics",
       "Unlimited team members",
-      "Dedicated support",
+      "Unlimited sources",
+      "Custom AI training",
+      "Dedicated success manager",
+      "24/7 phone support",
       "Custom integrations",
-      "White-label options",
+      "On-premise deployment",
+      "Unlimited data retention",
+      "Custom reporting",
+      "SLA guarantees",
       "Advanced security",
-      "Custom training",
+      "Compliance certifications",
     ],
-    cta: "Contact Sales",
-    popular: false,
+    limitations: [],
   },
 ]
 
+const roiCalculatorDefaults = {
+  teamSize: [10],
+  currentTools: [3],
+  timeSpent: [20],
+  avgSalary: [75000],
+}
+
 export function PricingSection() {
   const [isAnnual, setIsAnnual] = useState(false)
+  const [showCalculator, setShowCalculator] = useState(false)
+  const [calculatorValues, setCalculatorValues] = useState(roiCalculatorDefaults)
+
+  const calculateROI = () => {
+    const teamSize = calculatorValues.teamSize[0]
+    const currentTools = calculatorValues.currentTools[0]
+    const timeSpent = calculatorValues.timeSpent[0]
+    const avgSalary = calculatorValues.avgSalary[0]
+
+    const currentCost = currentTools * 200 + (teamSize * avgSalary * (timeSpent / 100)) / 12
+    const newCost = 999 // Professional tier
+    const timeSaved = timeSpent * 0.75 // 75% time savings
+    const timeSavingValue = (teamSize * avgSalary * (timeSaved / 100)) / 12
+
+    return {
+      currentCost: Math.round(currentCost),
+      newCost,
+      savings: Math.round(currentCost - newCost + timeSavingValue),
+      roi: Math.round(((currentCost - newCost + timeSavingValue) / newCost) * 100),
+    }
+  }
+
+  const roiResults = calculateROI()
 
   return (
-    <section id="pricing" className="py-20 px-4 sm:px-6 lg:px-8">
-      <div className="container mx-auto">
+    <section className="py-24 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">
-            Transparent{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00D4FF] to-[#A47864]">Pricing</span>
+          <Badge variant="outline" className="mb-4 bg-green-400/10 border-green-400/30 text-green-400">
+            <Calculator className="w-4 h-4 mr-2" />
+            Transparent Pricing
+          </Badge>
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            Choose Your{" "}
+            <span className="bg-gradient-to-r from-teal-400 to-purple-400 bg-clip-text text-transparent">
+              Intelligence Level
+            </span>
           </h2>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
-            Choose the perfect plan for your team. All plans include our 14-day money-back guarantee.
+          <p className="text-xl text-slate-400 max-w-3xl mx-auto mb-8">
+            Start free, scale as you grow. No hidden fees, no vendor lock-in, no surprises.
           </p>
 
-          <div className="flex items-center justify-center space-x-4">
-            <span className={`text-sm ${!isAnnual ? "text-white" : "text-gray-400"}`}>Monthly</span>
-            <Switch checked={isAnnual} onCheckedChange={setIsAnnual} className="data-[state=checked]:bg-[#00D4FF]" />
-            <span className={`text-sm ${isAnnual ? "text-white" : "text-gray-400"}`}>
-              Annual
-              <Badge className="ml-2 bg-[#A47864] text-white">Save 20%</Badge>
-            </span>
+          {/* Annual/Monthly Toggle */}
+          <div className="flex items-center justify-center space-x-4 mb-8">
+            <span className={`text-sm ${!isAnnual ? "text-white" : "text-slate-400"}`}>Monthly</span>
+            <Switch checked={isAnnual} onCheckedChange={setIsAnnual} className="data-[state=checked]:bg-teal-400" />
+            <span className={`text-sm ${isAnnual ? "text-white" : "text-slate-400"}`}>Annual</span>
+            <Badge variant="secondary" className="bg-green-400/20 text-green-400">
+              Save up to 33%
+            </Badge>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        {/* Pricing Cards */}
+        <div className="grid lg:grid-cols-3 gap-8 mb-16">
           {pricingTiers.map((tier, index) => (
             <Card
               key={index}
-              className={`relative bg-white/5 backdrop-blur-md border-white/10 hover:bg-white/10 transition-all duration-300 ${
-                tier.popular ? "ring-2 ring-[#00D4FF] scale-105" : ""
+              className={`relative bg-slate-800/50 border-2 ${tier.borderColor} ${tier.bgColor} hover:transform hover:scale-105 transition-all duration-300 ${
+                tier.popular ? "ring-2 ring-purple-400/50" : ""
               }`}
             >
               {tier.popular && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-[#00D4FF] text-white px-4 py-1">
-                    <Star className="h-3 w-3 mr-1" />
-                    Most Popular
-                  </Badge>
-                </div>
+                <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-purple-400 text-slate-900">
+                  Most Popular
+                </Badge>
               )}
 
-              <CardHeader className="text-center pb-8">
-                <CardTitle className="text-2xl font-bold text-white mb-2">{tier.name}</CardTitle>
-                <div className="mb-4">
-                  {typeof tier.price.monthly === "number" ? (
-                    <div>
-                      <span className="text-4xl font-bold text-white">
-                        ${isAnnual ? tier.price.annual : tier.price.monthly}
-                      </span>
-                      <span className="text-gray-400">/month</span>
-                      {isAnnual && (
-                        <div className="text-sm text-[#A47864] mt-1">
-                          Billed annually (${tier.price.annual * 12}/year)
-                        </div>
-                      )}
-                    </div>
+              <CardHeader className="text-center pb-4">
+                <div className={`inline-flex p-3 rounded-full ${tier.bgColor} mb-4`}>
+                  <tier.icon className={`w-8 h-8 ${tier.color}`} />
+                </div>
+                <CardTitle className="text-2xl font-bold text-white">{tier.name}</CardTitle>
+                <CardDescription className="text-slate-400">{tier.description}</CardDescription>
+
+                <div className="mt-6">
+                  {tier.customPricing ? (
+                    <div className="text-4xl font-bold text-white">Custom</div>
                   ) : (
-                    <span className="text-4xl font-bold text-white">{tier.price.monthly}</span>
+                    <div className="flex items-baseline justify-center">
+                      <span className="text-4xl font-bold text-white">
+                        ${isAnnual ? Math.round(tier.annualPrice / 12) : tier.monthlyPrice}
+                      </span>
+                      <span className="text-slate-400 ml-2">/month</span>
+                    </div>
+                  )}
+                  {!tier.customPricing && isAnnual && (
+                    <div className="text-sm text-green-400 mt-1">${tier.annualPrice} billed annually</div>
                   )}
                 </div>
-                <p className="text-gray-300 text-sm">{tier.description}</p>
               </CardHeader>
 
               <CardContent className="space-y-6">
-                <ul className="space-y-3">
+                <div className="space-y-3">
                   {tier.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-center space-x-3">
-                      <Check className="h-4 w-4 text-[#00D4FF] flex-shrink-0" />
-                      <span className="text-gray-300 text-sm">{feature}</span>
-                    </li>
+                    <div key={featureIndex} className="flex items-center space-x-3">
+                      <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                      <span className="text-slate-300 text-sm">{feature}</span>
+                    </div>
                   ))}
-                </ul>
+                </div>
+
+                {tier.limitations.length > 0 && (
+                  <div className="pt-4 border-t border-slate-700">
+                    <div className="text-sm text-slate-500 mb-2">Limitations:</div>
+                    {tier.limitations.map((limitation, limitIndex) => (
+                      <div key={limitIndex} className="text-xs text-slate-500 mb-1">
+                        • {limitation}
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 <Button
                   className={`w-full ${
                     tier.popular
-                      ? "bg-[#00D4FF] hover:bg-[#00D4FF]/90 text-white"
-                      : "bg-[#A47864] hover:bg-[#A47864]/90 text-white"
+                      ? "bg-purple-400 hover:bg-purple-500 text-slate-900"
+                      : "bg-slate-700 hover:bg-slate-600 text-white"
                   }`}
                   size="lg"
                 >
-                  {tier.cta}
+                  {tier.customPricing ? "Contact Sales" : "Start Free Trial"}
+                  <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        <div className="mt-16 text-center">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-[#00D4FF]/20 rounded-lg flex items-center justify-center mb-3">
-                <Check className="h-6 w-6 text-[#00D4FF]" />
+        {/* ROI Calculator */}
+        <Card className="bg-slate-800/30 border-slate-700">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-bold text-white flex items-center justify-center">
+              <Calculator className="w-6 h-6 mr-2 text-teal-400" />
+              ROI Calculator
+            </CardTitle>
+            <CardDescription>See your potential savings with MediaIntelligence.ai</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Calculator Inputs */}
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Team Size: {calculatorValues.teamSize[0]} people
+                  </label>
+                  <Slider
+                    value={calculatorValues.teamSize}
+                    onValueChange={(value) => setCalculatorValues({ ...calculatorValues, teamSize: value })}
+                    max={100}
+                    min={1}
+                    step={1}
+                    className="w-full"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Current Tools: {calculatorValues.currentTools[0]} tools
+                  </label>
+                  <Slider
+                    value={calculatorValues.currentTools}
+                    onValueChange={(value) => setCalculatorValues({ ...calculatorValues, currentTools: value })}
+                    max={20}
+                    min={1}
+                    step={1}
+                    className="w-full"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Time Spent on Media Intelligence: {calculatorValues.timeSpent[0]}%
+                  </label>
+                  <Slider
+                    value={calculatorValues.timeSpent}
+                    onValueChange={(value) => setCalculatorValues({ ...calculatorValues, timeSpent: value })}
+                    max={50}
+                    min={5}
+                    step={5}
+                    className="w-full"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Average Salary: ${calculatorValues.avgSalary[0].toLocaleString()}
+                  </label>
+                  <Slider
+                    value={calculatorValues.avgSalary}
+                    onValueChange={(value) => setCalculatorValues({ ...calculatorValues, avgSalary: value })}
+                    max={200000}
+                    min={40000}
+                    step={5000}
+                    className="w-full"
+                  />
+                </div>
               </div>
-              <h4 className="text-white font-semibold mb-2">14-Day Free Trial</h4>
-              <p className="text-gray-400 text-sm">No credit card required</p>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-[#A47864]/20 rounded-lg flex items-center justify-center mb-3">
-                <Check className="h-6 w-6 text-[#A47864]" />
+
+              {/* Results */}
+              <div className="bg-slate-700/30 rounded-xl p-6 border border-slate-600">
+                <h4 className="text-lg font-bold text-white mb-4">Your ROI Projection</h4>
+                <div className="space-y-4">
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Current Monthly Cost:</span>
+                    <span className="text-white font-semibold">${roiResults.currentCost.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">MediaIntelligence.ai Cost:</span>
+                    <span className="text-white font-semibold">${roiResults.newCost.toLocaleString()}</span>
+                  </div>
+                  <div className="border-t border-slate-600 pt-4">
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">Monthly Savings:</span>
+                      <span className="text-green-400 font-bold text-xl">${roiResults.savings.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between mt-2">
+                      <span className="text-slate-400">ROI:</span>
+                      <span className="text-teal-400 font-bold text-xl">{roiResults.roi}%</span>
+                    </div>
+                  </div>
+                </div>
+                <Button className="w-full mt-6 bg-teal-400 hover:bg-teal-500 text-slate-900">Get Custom Quote</Button>
               </div>
-              <h4 className="text-white font-semibold mb-2">Money-Back Guarantee</h4>
-              <p className="text-gray-400 text-sm">Full refund within 14 days</p>
             </div>
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-[#00D4FF]/20 rounded-lg flex items-center justify-center mb-3">
-                <Check className="h-6 w-6 text-[#00D4FF]" />
-              </div>
-              <h4 className="text-white font-semibold mb-2">Enterprise Security</h4>
-              <p className="text-gray-400 text-sm">SOC 2, GDPR, ISO 27001</p>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-[#A47864]/20 rounded-lg flex items-center justify-center mb-3">
-                <Check className="h-6 w-6 text-[#A47864]" />
-              </div>
-              <h4 className="text-white font-semibold mb-2">24/7 Support</h4>
-              <p className="text-gray-400 text-sm">Always here to help</p>
-            </div>
+          </CardContent>
+        </Card>
+
+        {/* Enterprise CTA */}
+        <div className="mt-16 text-center bg-gradient-to-r from-slate-800/50 to-slate-700/50 rounded-2xl p-8 border border-slate-600">
+          <Building className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
+          <h3 className="text-2xl font-bold text-white mb-4">Need Enterprise Features?</h3>
+          <p className="text-slate-400 mb-6 max-w-2xl mx-auto">
+            Custom AI training, on-premise deployment, dedicated support, and enterprise-grade security. Let's discuss
+            your specific requirements.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" className="bg-yellow-400 hover:bg-yellow-500 text-slate-900">
+              Schedule Enterprise Demo
+            </Button>
+            <Button size="lg" variant="outline" className="border-slate-600 text-slate-300 bg-transparent">
+              Download Enterprise Guide
+            </Button>
           </div>
         </div>
       </div>
